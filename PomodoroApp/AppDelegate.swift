@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Create the menu bar item
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusBarItem.button?.title = "Timer"
+        statusBarItem.button?.title = "01:00" // Default title
 
         // Configure the popover
         popover = NSPopover()
@@ -26,6 +26,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusBarItem.button {
             button.action = #selector(togglePopover(_:))
             button.target = self
+        }
+
+        // Observe timer updates
+        timerManager.onUpdate = { [weak self] remainingTime in
+            DispatchQueue.main.async {
+                self?.statusBarItem.button?.title = "\(self?.formatTime(remainingTime) ?? "00:00")"
+            }
         }
     }
 
@@ -37,5 +44,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             }
         }
+    }
+
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let seconds = seconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }

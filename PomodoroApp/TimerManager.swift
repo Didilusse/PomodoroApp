@@ -12,6 +12,7 @@ class TimerManager: ObservableObject {
     @Published var totalTime: Int = 60 // Total timer duration
     private var timer: Timer?
     @Published var isRunning: Bool = false
+    var onUpdate: ((Int) -> Void)? // Callback for updates
 
     func startTimer() {
         guard !isRunning else { return }
@@ -30,11 +31,13 @@ class TimerManager: ObservableObject {
         isRunning = false
         timer?.invalidate()
         counter = 0
+        onUpdate?(remainingTime) // Notify reset
     }
 
     private func incrementTime() {
         if counter < totalTime {
             counter += 1
+            onUpdate?(remainingTime) // Notify every second
         } else {
             pauseTimer()
         }
