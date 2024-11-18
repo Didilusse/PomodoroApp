@@ -7,42 +7,44 @@
 
 import Foundation
 
-class TimerManager {
+class TimerManager: ObservableObject {
+    @Published var counter: Int = 0 // Time elapsed
+    @Published var totalTime: Int = 60 // Total timer duration
     private var timer: Timer?
-        private(set) var counter: Int = 0
-        var isRunning: Bool = false
+    @Published var isRunning: Bool = false
 
-        var onTimeUpdate: ((String) -> Void)?
-
-        func startTimer() {
-            guard !isRunning else { return }
-            isRunning = true
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-                self?.incrementTime()
-            }
+    func startTimer() {
+        guard !isRunning else { return }
+        isRunning = true
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.incrementTime()
         }
+    }
 
-        func pauseTimer() {
-            isRunning = false
-            timer?.invalidate()
-        }
+    func pauseTimer() {
+        isRunning = false
+        timer?.invalidate()
+    }
 
-        func resetTimer() {
-            isRunning = false
-            timer?.invalidate()
-            counter = 0
-            updateTime()
-        }
+    func resetTimer() {
+        isRunning = false
+        timer?.invalidate()
+        counter = 0
+    }
 
-        private func incrementTime() {
+    private func incrementTime() {
+        if counter < totalTime {
             counter += 1
-            updateTime()
+        } else {
+            pauseTimer()
         }
+    }
 
-        private func updateTime() {
-            let minutes = counter / 60
-            let seconds = counter % 60
-            let formattedTime = String(format: "%02d:%02d", minutes, seconds)
-            onTimeUpdate?(formattedTime)
-        }
+    var remainingTime: Int {
+        return totalTime - counter
+    }
+
+    var progress: Double {
+        return Double(counter) / Double(totalTime)
+    }
 }
