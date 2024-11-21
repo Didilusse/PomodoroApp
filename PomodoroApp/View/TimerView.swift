@@ -12,6 +12,11 @@ struct TimerView: View {
 
     var body: some View {
         VStack {
+            Text(timerManager.modeDescription)
+                .font(.title)
+                .bold()
+                .padding()
+
             ZStack {
                 Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 10) // Background circle
@@ -29,7 +34,7 @@ struct TimerView: View {
                     .rotationEffect(.degrees(-90)) // Start at the top
                     .frame(width: 150, height: 150)
 
-                Text("\(timerManager.remainingTime)s")
+                Text("\(timerManager.remainingTime / 60):\(String(format: "%02d", timerManager.remainingTime % 60))")
                     .font(.largeTitle)
                     .bold()
             }
@@ -53,6 +58,6 @@ struct TimerView: View {
             }
         }
         .padding()
-        .frame(width: 200, height: 250)
+        .frame(width: 250, height: 300)
     }
 }
